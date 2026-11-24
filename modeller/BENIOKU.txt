@@ -1,0 +1,4 @@
+Bu klasöre isteğe bağlı olarak hand_landmarker.task dosyası konabilir.
+İndirme adresi:
+https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
+Dosya yoksa sayfa modeli otomatik olarak bu adresten indirir.
