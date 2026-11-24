@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Elle İt Parkur</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/stil.css">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+  <!-- Katmanlar: kamera görüntüsü -> 3D sahne -> el iskeleti -> arayüz -->
+  <video id="video" playsinline muted autoplay></video>
+  <canvas id="sahne"></canvas>
+  <canvas id="elKatmani"></canvas>
+
+  <header class="ust-bar">
+    <img class="logo-kucuk" src="logo.png" alt="Antalya Yükseliş Koleji">
+    <div class="sure" id="sure">0.0 sn</div>
+    <div class="oyuncu" id="oyuncu" hidden></div>
+    <ol class="bolumler" id="bolumler"></ol>
+    <div class="durum" id="durum" data-tur="yok">El aranıyor</div>
+  </header>
+
+  <p class="ipucu" id="ipucu" hidden></p>
+
+  <nav class="alt-bar">
+    <button id="btnAyar" type="button">Görünüm</button>
+    <button id="btnKamera" type="button">Kamerayı çevir</button>
+    <button id="btnYeniden" type="button">Baştan</button>
+  </nav>
+
+  <section class="panel" id="ayarPanel" hidden>
+    <h2>Görünüm</h2>
+    <label for="ayYakinlik">Yakınlık <input id="ayYakinlik" type="range" min="2.5" max="10" step="0.1"></label>
+    <label for="ayAci">Bakış açısı <input id="ayAci" type="range" min="5" max="60" step="1"></label>
+    <label for="ayKayma">Robotun ekrandaki yeri <input id="ayKayma" type="range" min="-1.5" max="1.5" step="0.05"></label>
+    <label for="ayYukseklik">Parkurun yüksekliği <input id="ayYukseklik" type="range" min="-1.5" max="1.5" step="0.05"></label>
+    <label class="kutu" for="ayIskelet"><input id="ayIskelet" type="checkbox"> El iskeletini göster</label>
+    <label class="kutu" for="ayAyna"><input id="ayAyna" type="checkbox"> Kamera görüntüsünü aynala</label>
+    <div class="satir">
+      <button id="btnVarsayilan" type="button">Varsayılana dön</button>
+      <button id="btnKapat" type="button" class="ana">Tamam</button>
+    </div>
+  </section>
+
+  <section class="giris" id="giris">
+    <div class="giris-kart genis">
+      <div class="kolon">
+        <div class="baslik">
+          <img src="logo.png" alt="Antalya Yükseliş Koleji logosu">
+          <h1>Elle İt Parkur</h1>
+        </div>
+        <form id="adForm" class="ad-form" novalidate>
+          <label for="oyuncuAdi">Adın</label>
+          <input id="oyuncuAdi" name="oyuncuAdi" type="text" maxlength="20" autocomplete="off" placeholder="Örn. Ayşe 9B" enterkeyhint="go">
+          <p class="hata" id="adHata" hidden>Başlamak için adını yaz.</p>
+        </form>
+        <p>İşaret parmağını kameraya göster ve robotu elinle yönet:</p>
+        <ul class="hareketler">
+          <li><b>İt</b> Parmağını robotun sırtına değdir, ileri doğru it.</li>
+          <li><b>Zıplat</b> Parmağını ayaklarının altından yukarı doğru hızlıca kaldır.</li>
+          <li><b>Eğilt</b> Başına üstten bastır. Bastırırken parmağını ileri kaydırırsan çömelerek yürür.</li>
+        </ul>
+        <p class="kucuk">Skorun HOME'a ne kadar sürede ulaştığın. Süre robota ilk dokunduğunda başlar. Boşluğa düşersen son bayraktan devam edersin, süre işlemeye devam eder.</p>
+        <div class="satir">
+          <button id="btnKameraBasla" type="button" class="ana">Kamerayla başla</button>
+          <button id="btnKamerasiz" type="button">Kamerasız dene</button>
+        </div>
+        <p class="kucuk" id="girisNot">Kamerasız modda robotu fareyle ya da parmağınla ekrana dokunarak yönetirsin.</p>
+      </div>
+      <div class="kolon skor-kolon">
+        <h2>En iyi 10</h2>
+        <table class="skor-tablo">
+          <thead><tr><th>#</th><th>Ad</th><th>Süre</th><th>Düşme</th></tr></thead>
+          <tbody id="girisSkor"></tbody>
+        </table>
+        <button id="btnTemizle" type="button" class="kucuk-buton">Listeyi temizle</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bitis" id="bitis" hidden>
+    <div class="giris-kart">
+      <div class="baslik">
+        <img src="logo.png" alt="Antalya Yükseliş Koleji logosu">
+        <h1>HOME!</h1>
+      </div>
+      <p class="sonuc" id="bitisMetin"></p>
+      <p class="sira" id="bitisSira"></p>
+      <h2>En iyi 10</h2>
+      <table class="skor-tablo">
+        <thead><tr><th>#</th><th>Ad</th><th>Süre</th><th>Düşme</th></tr></thead>
+        <tbody id="bitisSkor"></tbody>
+      </table>
+      <div class="satir">
+        <button id="btnOyuncu" type="button">Oyuncu değiştir</button>
+        <button id="btnTekrar" type="button" class="ana">Tekrar oyna</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
